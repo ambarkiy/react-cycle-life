@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import URL_HELPER from '../CONSTANTS';
 import TableView from './table-view';
 import SearchBar from './search-bar';
+import Axios from 'axios';
 
 class HocNews extends Component {
+	_isMounted = false;
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -23,16 +25,20 @@ class HocNews extends Component {
 		const urlRequest = `${URL_HELPER.PATH_BASE}${URL_HELPER.PATH_SEARCH}?${URL_HELPER.PARAM_SEARCH}
 		${searchTerm}&${URL_HELPER.PARAM_PAGE}${page}&${URL_HELPER.PARAM_HITS_PER_PAGE}${hitsParPage}`;
 
-		fetch(urlRequest)
-			.then((response) => response.json())
-			.then((result) => this.setSearchResult(result))
-			.catch((error) => this.setState({ error }));
+		Axios(urlRequest)
+			.then((response) => response)
+			.then((result) => this._isMounted && this.setSearchResult(result))
+			.catch((error) => this._isMounted && this.setState({ error }));
 	};
 
 	componentDidMount() {
+		this._isMounted = true;
 		const { searchTerm } = this.state;
 		this.setState({ searchKey: searchTerm });
 		this.fetchHits(searchTerm);
+	}
+	componentWillUnmount() {
+		this._isMounted = false;
 	}
 
 	render() {
