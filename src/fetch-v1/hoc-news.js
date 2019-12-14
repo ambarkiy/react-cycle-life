@@ -9,7 +9,8 @@ class HocNews extends Component {
 		this.state = {
 			results: null,
 			searchKey: '',
-			searchTerm: URL_HELPER.DEFAULT_QUERY
+			searchTerm: URL_HELPER.DEFAULT_QUERY,
+			error: null
 		};
 		this.needToSearchHits = this.needToSearchHits.bind(this);
 		this.fetchHits = this.fetchHits.bind(this);
@@ -25,7 +26,7 @@ class HocNews extends Component {
 		fetch(urlRequest)
 			.then((response) => response.json())
 			.then((result) => this.setSearchResult(result))
-			.catch((error) => error);
+			.catch((error) => this.setState({ error }));
 	};
 
 	componentDidMount() {
@@ -35,9 +36,12 @@ class HocNews extends Component {
 	}
 
 	render() {
-		const { searchTerm, results, searchKey } = this.state;
+		const { searchTerm, results, searchKey, error } = this.state;
 		const page = (results && results[searchKey] && results[searchKey].page) || 0;
 		const list = (results && results[searchKey] && results[searchKey].hits) || [];
+		if (error) {
+			return <p>Une erreur s'est produite</p>;
+		}
 		return (
 			<div>
 				<h4>V1 recupération des news</h4>
