@@ -1,5 +1,4 @@
 import React from 'react';
-const isSearched = (pattern) => (item) => item.toLowercase().includes(pattern.toLowercase());
 
 const TableView = ({ list, pattern, onDissmiss }) => {
 	return list.map((item) => (

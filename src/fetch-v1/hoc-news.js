@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import URL_HELPER from '../CONSTANTS';
 import TableView from './table-view';
 import SearchBar from './search-bar';
-import Axios from 'axios';
+import axios from 'axios';
 
 class HocNews extends Component {
 	_isMounted = false;
@@ -22,11 +22,10 @@ class HocNews extends Component {
 		this.onSubmitSearch = this.onSubmitSearch.bind(this);
 	}
 	fetchHits = (searchTerm, page = '0', hitsParPage = URL_HELPER.DEFAULT_HITS_PER_PAGE) => {
-		const urlRequest = `${URL_HELPER.PATH_BASE}${URL_HELPER.PATH_SEARCH}?${URL_HELPER.PARAM_SEARCH}
-		${searchTerm}&${URL_HELPER.PARAM_PAGE}${page}&${URL_HELPER.PARAM_HITS_PER_PAGE}${hitsParPage}`;
+		const urlRequest = `${URL_HELPER.PATH_BASE}${URL_HELPER.PATH_SEARCH}?${URL_HELPER.PARAM_SEARCH}${searchTerm}&${URL_HELPER.PARAM_PAGE}${page}&${URL_HELPER.PARAM_HITS_PER_PAGE}${hitsParPage}`;
 
-		Axios(urlRequest)
-			.then((response) => response)
+		axios(urlRequest)
+			.then((response) => response.data)
 			.then((result) => this._isMounted && this.setSearchResult(result))
 			.catch((error) => this._isMounted && this.setState({ error }));
 	};
