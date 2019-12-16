@@ -3,6 +3,7 @@ import URL_HELPER from '../CONSTANTS';
 import TableView from './table-view';
 import SearchBar from './search-bar';
 import axios from 'axios';
+import { ButtonWithLoading } from '../Button';
 
 class HocNews extends Component {
 	_isMounted = false;
@@ -12,7 +13,8 @@ class HocNews extends Component {
 			results: null,
 			searchKey: '',
 			searchTerm: URL_HELPER.DEFAULT_QUERY,
-			error: null
+			error: null,
+			isLoading: false
 		};
 		this.needToSearchHits = this.needToSearchHits.bind(this);
 		this.fetchHits = this.fetchHits.bind(this);
@@ -22,6 +24,7 @@ class HocNews extends Component {
 		this.onSubmitSearch = this.onSubmitSearch.bind(this);
 	}
 	fetchHits = (searchTerm, page = '0', hitsParPage = URL_HELPER.DEFAULT_HITS_PER_PAGE) => {
+		this.setState({ isLoading: true });
 		const urlRequest = `${URL_HELPER.PATH_BASE}${URL_HELPER.PATH_SEARCH}?${URL_HELPER.PARAM_SEARCH}${searchTerm}&${URL_HELPER.PARAM_PAGE}${page}&${URL_HELPER.PARAM_HITS_PER_PAGE}${hitsParPage}`;
 
 		axios(urlRequest)
@@ -41,7 +44,7 @@ class HocNews extends Component {
 	}
 
 	render() {
-		const { searchTerm, results, searchKey, error } = this.state;
+		const { searchTerm, results, searchKey, error, isLoading } = this.state;
 		const page = (results && results[searchKey] && results[searchKey].page) || 0;
 		const list = (results && results[searchKey] && results[searchKey].hits) || [];
 		if (error) {
@@ -53,8 +56,10 @@ class HocNews extends Component {
 				<SearchBar value={searchTerm} onChange={this.onSearchChange} onSubmit={this.onSubmitSearch}>
 					Rechercher
 				</SearchBar>
-				{<TableView list={list} onDissmiss={this.onDissmiss} />}
-				<button onClick={() => this.fetchHits(searchKey, page + 1)}>Suivant</button>
+				<TableView list={list} onDissmiss={this.onDissmiss} />
+				<ButtonWithLoading isLoading={isLoading} onClick={() => this.fetchHits(page + 1)}>
+					Suivant
+				</ButtonWithLoading>
 			</div>
 		);
 	}
@@ -86,7 +91,8 @@ class HocNews extends Component {
 			results: {
 				...results,
 				[searchKey]: { hits: updatedHits, page }
-			}
+			},
+			isLoading: false
 		});
 	};
 
