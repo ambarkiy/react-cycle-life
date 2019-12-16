@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import URL_HELPER from '../CONSTANTS';
-import TableView from './table-view';
-import SearchBar from './search-bar';
+import TableView from '../TableView/table-view';
+import SearchBar from '../SearchBar/search-bar';
 import axios from 'axios';
 import { ButtonWithLoading } from '../Button';
 
-class HocNews extends Component {
+class News extends Component {
 	_isMounted = false;
 	constructor(props) {
 		super(props);
@@ -14,7 +14,8 @@ class HocNews extends Component {
 			searchKey: '',
 			searchTerm: URL_HELPER.DEFAULT_QUERY,
 			error: null,
-			isLoading: false
+			isLoading: false,
+			sortKey: 'NONE'
 		};
 		this.needToSearchHits = this.needToSearchHits.bind(this);
 		this.fetchHits = this.fetchHits.bind(this);
@@ -22,7 +23,9 @@ class HocNews extends Component {
 		this.setSearchResult = this.setSearchResult.bind(this);
 		this.onDissmiss = this.onDissmiss.bind(this);
 		this.onSubmitSearch = this.onSubmitSearch.bind(this);
+		this.onSort = this.onSort.bind(this);
 	}
+
 	fetchHits = (searchTerm, page = '0', hitsParPage = URL_HELPER.DEFAULT_HITS_PER_PAGE) => {
 		this.setState({ isLoading: true });
 		const urlRequest = `${URL_HELPER.PATH_BASE}${URL_HELPER.PATH_SEARCH}?${URL_HELPER.PARAM_SEARCH}${searchTerm}&${URL_HELPER.PARAM_PAGE}${page}&${URL_HELPER.PARAM_HITS_PER_PAGE}${hitsParPage}`;
@@ -39,27 +42,31 @@ class HocNews extends Component {
 		this.setState({ searchKey: searchTerm });
 		this.fetchHits(searchTerm);
 	}
+
 	componentWillUnmount() {
 		this._isMounted = false;
 	}
 
 	render() {
-		const { searchTerm, results, searchKey, error, isLoading } = this.state;
+		const { searchTerm, results, searchKey, error, isLoading, sortKey } = this.state;
 		const page = (results && results[searchKey] && results[searchKey].page) || 0;
 		const list = (results && results[searchKey] && results[searchKey].hits) || [];
 		if (error) {
 			return <p>Une erreur s'est produite</p>;
 		}
 		return (
-			<div>
-				<h4>V1 recupération des news</h4>
-				<SearchBar value={searchTerm} onChange={this.onSearchChange} onSubmit={this.onSubmitSearch}>
-					Rechercher
-				</SearchBar>
-				<TableView list={list} onDissmiss={this.onDissmiss} />
-				<ButtonWithLoading isLoading={isLoading} onClick={() => this.fetchHits(page + 1)}>
-					Suivant
-				</ButtonWithLoading>
+			<div className='page'>
+				<div className='interaction'>
+					<SearchBar value={searchTerm} onChange={this.onSearchChange} onSubmit={this.onSubmitSearch}>
+						Rechercher
+					</SearchBar>
+				</div>
+				<div>
+					<TableView list={list} onDissmiss={this.onDissmiss} sortKey={sortKey} onSort={this.onSort} />
+					<ButtonWithLoading isLoading={isLoading} onClick={() => this.fetchHits(page + 1)}>
+						Suivant
+					</ButtonWithLoading>
+				</div>
 			</div>
 		);
 	}
@@ -112,5 +119,9 @@ class HocNews extends Component {
 	needToSearchHits(searchTerm) {
 		return !this.state.results[searchTerm];
 	}
+
+	onSort(sortKey) {
+		this.setState({ sortKey });
+	}
 }
-export default HocNews;
+export default News;

@@ -1,18 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
-import { URL_TEST } from './CONSTANTS.js';
-import HocNews from './fetch-v1/hoc-news';
+import { News } from './News';
 
 class App extends Component {
 	render() {
-		return (
-			<div>
-				<pre>{URL_TEST}</pre>
-				<div>
-					<HocNews />
-				</div>
-			</div>
-		);
+		return <News />;
 	}
 }
 
