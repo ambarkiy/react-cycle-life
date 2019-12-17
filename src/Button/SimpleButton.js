@@ -1,6 +1,10 @@
 import React from 'react';
 import './simple-button.css';
 
-const SimpleButton = ({ children, onClick }) => <button onClick={onClick}>{children}</button>;
+const SimpleButton = ({ children, onClick, className }) => (
+	<button onClick={onClick} className={className}>
+		{children}
+	</button>
+);
 
 export default SimpleButton;

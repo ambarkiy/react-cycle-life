@@ -15,8 +15,10 @@ class News extends Component {
 			searchTerm: URL_HELPER.DEFAULT_QUERY,
 			error: null,
 			isLoading: false,
-			sortKey: 'NONE'
+			sortKey: 'NONE',
+			isSortReverse: false
 		};
+
 		this.needToSearchHits = this.needToSearchHits.bind(this);
 		this.fetchHits = this.fetchHits.bind(this);
 		this.onSearchChange = this.onSearchChange.bind(this);
@@ -48,9 +50,10 @@ class News extends Component {
 	}
 
 	render() {
-		const { searchTerm, results, searchKey, error, isLoading, sortKey } = this.state;
+		const { searchTerm, results, searchKey, error, isLoading, sortKey, isSortReverse } = this.state;
 		const page = (results && results[searchKey] && results[searchKey].page) || 0;
 		const list = (results && results[searchKey] && results[searchKey].hits) || [];
+
 		if (error) {
 			return <p>Une erreur s'est produite</p>;
 		}
@@ -62,7 +65,13 @@ class News extends Component {
 					</SearchBar>
 				</div>
 				<div>
-					<TableView list={list} onDissmiss={this.onDissmiss} sortKey={sortKey} onSort={this.onSort} />
+					<TableView
+						list={list}
+						onDissmiss={this.onDissmiss}
+						sortKey={sortKey}
+						onSort={this.onSort}
+						isSortReverse={isSortReverse}
+					/>
 					<ButtonWithLoading isLoading={isLoading} onClick={() => this.fetchHits(page + 1)}>
 						Suivant
 					</ButtonWithLoading>
@@ -121,7 +130,8 @@ class News extends Component {
 	}
 
 	onSort(sortKey) {
-		this.setState({ sortKey });
+		const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
+		this.setState({ sortKey, isSortReverse });
 	}
 }
 export default News;

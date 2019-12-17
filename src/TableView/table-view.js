@@ -12,33 +12,36 @@ const SORTS = {
 	POINTS: (list) => sortBy(list, 'points').reverse()
 };
 
-const TableView = ({ list, pattern, onDissmiss, sortKey, onSort }) => {
+const TableView = ({ list, pattern, onDissmiss, sortKey, onSort, isSortReverse }) => {
+	const sortedList = SORTS[sortKey](list);
+	const reverseSortedList = isSortReverse ? sortedList.reverse() : sortedList;
+
 	return (
 		<div className='table'>
 			<div className='table-header'>
 				<span style={{ with: '40%' }}>
-					<Sort sortKey={'TITLE'} onSort={onSort}>
+					<Sort sortKey={'TITLE'} activeSortKey={sortKey} onSort={onSort}>
 						TITLE
 					</Sort>
 				</span>
 			</div>
 			<div className='table-header'>
 				<span style={{ with: '30%' }}>
-					<Sort sortKey={'AUTHOR'} onSort={onSort}>
+					<Sort sortKey={'AUTHOR'} activeSortKey={sortKey} onSort={onSort}>
 						AUTHOR
 					</Sort>
 				</span>
 			</div>
 			<div className='table-header'>
 				<span style={{ with: '10%' }}>
-					<Sort sortKey={'COMMENTS'} onSort={onSort}>
+					<Sort sortKey={'COMMENTS'} activeSortKey={sortKey} onSort={onSort}>
 						COMMENTS
 					</Sort>
 				</span>
 			</div>
 			<div className='table-header'>
 				<span style={{ with: '10%' }}>
-					<Sort sortKey={'POINTS'} onSort={onSort}>
+					<Sort sortKey={'POINTS'} activeSortKey={sortKey} onSort={onSort}>
 						POINTS
 					</Sort>
 				</span>
@@ -46,7 +49,7 @@ const TableView = ({ list, pattern, onDissmiss, sortKey, onSort }) => {
 			<div className='table-header'>
 				<span style={{ with: '10%' }}>ARCHIVE</span>
 			</div>
-			{SORTS[sortKey](list).map((item) => (
+			{reverseSortedList.map((item) => (
 				<div key={item.objectID} className='table-row'>
 					<span>
 						<a href={item.url}>{item.title}</a>
